@@ -1,0 +1,74 @@
+1. 创建thrift描述文件
+2. thrift -gen java testJava.thrift 
+
+二.基础组件
+包括：类型、传输、协议、版本化和处理器
+1. 类型（type），thrift可以根据类型类自动生成序列化代码
+
+2. 传输(Transport)： 每种语言必须有统统的借口来进行双向原始数据通讯
+TSocket- 使用堵塞式I/O进行传输，也是最常见的模式。
+TFramedTransport- 使用非阻塞方式，按块的大小，进行传输，类似于Java中的NIO。
+TFileTransport- 顾名思义按照文件的方式进程传输，虽然这种方式不提供Java的实现，但是实现起来非常简单。
+TMemoryTransport- 使用内存I/O，就好比Java中的ByteArrayOutputStream实现。
+TZlibTransport- 使用执行zlib压缩，不提供Java的实现。
+
+3. 协议（Protocol）数据类型必须有一些方法来使用传输层进行编解码（二进制、XML等）
+TBinaryProtocol – 二进制编码格式进行数据传输。
+TCompactProtocol – 这种协议非常有效的，使用Variable-Length Quantity (VLQ) 编码对数据进行压缩。
+TJSONProtocol – 使用JSON的数据编码协议进行数据传输。
+TSimpleJSONProtocol – 这种节约只提供JSON只写的协议，适用于通过脚本语言解析
+TDebugProtocol – 在开发的过程中帮助开发人员调试用的，以文本的形式展现方便阅读。
+
+4. 版本控制（Versioning）：版本控制机制（新老程序更换，增删属性）
+
+5. 处理器（Processors）：产出能够处理数据流并完成远程过程调用的代码
+
+6.服务器（TServer）
+TSimpleServer -  单线程服务器端使用标准的堵塞式I/O。
+TThreadPoolServer -  多线程服务器端使用标准的堵塞式I/O。
+TNonblockingServer – 多线程服务器端使用非堵塞式I/O，并且实现了Java中的NIO通道。
+
+2.类型
+2.1.基本类型：bool,byte,i16,i32,i64,double,string
+2.2.结构体：使用关键字struct定义
+2.3.容器：list<type>,set<type>,Map<type1,type2>
+2.4.异常：使用关键字exception定义
+2.5.服务：使用关键字service定义
+3.传输
+3.1.接口：TTransport,TServerTransport
+3.2.实现：TSocket,TFileTransport,Utilities(TBufferdTransport,TFramedTransport和TMemoryBuffer)
+4.协议：
+4.1.接口：双向有序的消息传递基本类型、容器及结构体的编码
+4.2.结构：Thrift协议是自定界的，没有任何成帧，且不论编码格式。如需成帧可使用TFramedTransport来完成。
+4.3.实现：所有数据按一种扁平的二进制格式来写的。
+
+5.版本化：
+5.1.域标识符：在语言无关文件中的变量前的数字，自动添加的是从-1开始的负数
+5.2.lsset：用于对待预料之外的域
+5.3.案例分析：主要是客户端和服务器新旧不匹配
+5.4.协议/传输版本化
+
+6.远程过程调用实现：
+6.1.TProcessor：核心接口，有bool process(TProtocol in,TProtocol out)
+6.2.生成代码：特别提示下，内部会生成相应的Client类
+6.3.TServer:类型有TSimpleServer,TThreadedServer和TThreadPoolServer。
+三.其他
+7.实现细节
+7.1.目标语言：C++,Java,Python,Ruby和PHP。
+7.2.生成的结构体
+7.3.RPC方法识别
+7.4.服务器和多线程：Thrift实现了自己的多线程库
+7.5.线程原语：命名空间facebook::thirft::concurrency中实现了Thrift线程库：
+primitives,thread pool manager,timer manager。
+boost::shared_ptr,Mutex类,Condition类和Monitor类。
+借用Java中thread(线程对象)和runnable(线程执行逻辑)的区别的经验。
+7.6.Thread,Runnable and shared_ptr
+7.7.ThreadManager
+7.8.TimerManager
+7.9.非阻塞操作：Thrift基于libevent和TFramedTransport。
+7.10.编译器
+7.11.TFileTransport
+8.Facebook的Thrift服务：
+Facebook中已大量使用Thrift，包括搜索、日志、手机、广告和开发者平台。
+9.总结：
+使用Thrift可以让工程师们分而治之的将功能进行划分并可采用合适的语言类实现，而不用在编写重复的代码。

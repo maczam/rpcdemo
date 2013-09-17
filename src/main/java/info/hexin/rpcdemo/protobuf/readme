@@ -1,0 +1,10 @@
+
+1. protoc-2.4.1-win32存放在本机E:\fram\google\protoc-2.4.1-win3
+2. 编写xx.proto描述文件（PersonProbuf.proto）
+3. 调用protoc.exe生成java转化类（PersonProbuf.java）带有包
+4. 使用java转化类，使用详细见TestPB.java
+
+
+
+E:\fram\google\protoc-2.4.1-win32>protoc PersonProbuf.proto --java_out=e:\fram\google\protoc-2.4.1-win32
+E:\fram\google\protoc-2.4.1-win32>

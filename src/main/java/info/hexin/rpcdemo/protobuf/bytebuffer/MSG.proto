@@ -1,0 +1,8 @@
+package msg;
+  
+option java_package = "info.hexin.rpcdemo.protobuf.bytebuffe";   
+option java_outer_classname = "MSG";   
+message Hosts {   
+  repeated string name = 1;
+}   
+ 
